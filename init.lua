@@ -4,7 +4,15 @@ local function do_step()
 		if minetest.get_player_privs(pname).interact
 		and player:get_hp() > 0
 		and not player:get_player_control().sneak then
-			local pos = player:getpos()
+			local pos = player:get_pos()
+			if pos.x < -4500  or 4500  < pos.x
+			or pos.z < -4500  or 4500  < pos.z
+			or pos.y < -31000 or 31000 < pos.y then
+				minetest.log("error", "[item_drop] "..pname.." is out of bounds at "..
+					core.pos_to_string(pos))
+				minetest.after(60, do_step) -- Stop auto pick up for a bit.
+				return
+			end
 			pos.y = pos.y+0.5
 			local inv
 			for _,object in pairs(minetest.get_objects_inside_radius(pos, 1)) do
